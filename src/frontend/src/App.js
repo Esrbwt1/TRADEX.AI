@@ -1,6 +1,7 @@
 import React from 'react';
 import './App.css';
 import DocumentGenerator from './DocumentGenerator';
+import ComplianceChecker from './ComplianceChecker';
 
 function App() {
   return (
@@ -10,6 +11,8 @@ function App() {
       </header>
       <main>
         <DocumentGenerator />
+        <hr style={{ margin: '40px 0' }} />
+        <ComplianceChecker />
       </main>
     </div>
   );
