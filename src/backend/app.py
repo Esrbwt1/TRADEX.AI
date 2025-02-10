@@ -1,34 +1,16 @@
 import json
-from flask import Flask, request, jsonify  # Flask is now *actually* imported
+from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import CORS
 
-# Uncomment the following if you plan to use the OpenAI API in the future
-# import openai
-# openai.api_key = 'YOUR_OPENAI_API_KEY'  # Replace with your actual API key or use environment variables
-
-# Create the Flask app instance *BEFORE* using @app.route
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 @app.route('/generate-document', methods=['POST'])
 def generate_document():
     try:
-        # Get JSON data from the request
         data = request.get_json()
         document_type = data.get("document_type", "trade document")
         details = data.get("details", "No additional details provided.")
-
-        # For MVP, we simulate document generation.
-        # In the future, you could integrate with the OpenAI API like so:
-        #
-        # prompt = f"Generate a {document_type} for the following details: {details}"
-        # response = openai.Completion.create(
-        #     engine="text-davinci-003",  # Or a more modern engine like "text-davinci-003"
-        #     prompt=prompt,
-        #     max_tokens=150,
-        #     temperature=0.7  # Add temperature for creativity control
-        # )
-        # generated_text = response.choices[0].text.strip()
-
-        # Simulated response:
         generated_text = f"This is a simulated {document_type} generated for the details: {details}"
 
         return jsonify({
@@ -42,6 +24,42 @@ def generate_document():
             "error": str(e)
         }), 500
 
-# Run the app (if this script is executed directly)
+
+@app.route('/check-compliance', methods=['POST'])
+def check_compliance():
+    try:
+        # Get JSON data from the request
+        data = request.get_json()
+        document = data.get("document", "")
+        
+        if not document:
+            return jsonify({
+                "success": False,
+                "error": "No document provided."
+            }), 400
+        
+        # For MVP, simulate a compliance check:
+        # Here, we'll just assume that if the document's length is greater than 20 characters, it's compliant.
+        if len(document) > 20:
+            compliance_status = "Compliant"
+            compliance_details = "Simulated check: Document meets all required standards."
+        else:
+            compliance_status = "Non-compliant"
+            compliance_details = "Simulated check: Document seems to be missing important details."
+        
+        return jsonify({
+            "success": True,
+            "compliance_status": compliance_status,
+            "details": compliance_details
+        })
+    
+    except Exception as e:
+        return jsonify({
+            "success": False,
+            "error": str(e)
+        }), 500
+
+
+
 if __name__ == '__main__':
     app.run(debug=True)
